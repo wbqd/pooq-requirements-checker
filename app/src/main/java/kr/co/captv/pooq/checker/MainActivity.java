@@ -13,7 +13,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView cpuUsage;
     private TextView ramTotal;
     private TextView ramFree;
-    private TextView ramAvailable;
     private BenchmarkingTask benchmarkingTask;
 
     private static int log(String msg) {
@@ -30,10 +29,9 @@ public class MainActivity extends AppCompatActivity {
         cpuUsage = (TextView) findViewById(R.id.cpu_usage);
         ramTotal = (TextView) findViewById(R.id.memory_total);
         ramFree = (TextView) findViewById(R.id.memory_free);
-        ramAvailable = (TextView) findViewById(R.id.memory_available);
 
         // Display total mem in static, because this value not vary.
-        ramTotal.setText(Ram.getTotalRam());
+        ramTotal.setText(Ram.formatBytes(Ram.getTotalRam()));
 
         log("onCreate complete");
     }
@@ -111,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
     private class BenchmarkingTask extends AsyncTask<Void, String, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            String totalCpuUsage;
-            String ramFree;
+            float totalCpuUsage;
+            int ramFree;
             while (!isCancelled()) {
                 // CPU part
                 totalCpuUsage = Cpu.getCpuUsage();
@@ -121,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 ramFree = Ram.getFreeRam();
 
                 // Publish part
-                publishProgress(totalCpuUsage, ramFree);
+                publishProgress(Cpu.formatPercent(totalCpuUsage), Ram.formatBytes(ramFree));
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

@@ -5,7 +5,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_cpu">CPU</string>
     <string name="placeholder">Placeholder</string>
-    <string name="title_memory_free">Memory Free</string>
     <string name="title_memory_total">Memory Total</string>
-    <string name="title_memory_available">Memory Available</string>
+    <string name="title_memory_free">Memory Free</string>
 </resources>

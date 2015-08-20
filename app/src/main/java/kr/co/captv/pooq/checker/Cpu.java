@@ -76,15 +76,15 @@ public class Cpu {
     }
 
     /**
-     * @credits to https://github.com/takke/cpustats
      * @return current CPU usage in float
+     * @credits to https://github.com/takke/cpustats
      */
-    public synchronized static String getCpuUsage() {
+    public synchronized static float getCpuUsage() {
         if (cpuUsage == null) cpuUsage = new float[getNumCores()];
 
         if (lastPs == null) {
             lastPs = ProcStat.loadProcStat();
-            return formatPercent(cpuUsage[0]);
+            return cpuUsage[0];
         }
 
         final ProcStat ps = ProcStat.loadProcStat();
@@ -106,7 +106,7 @@ public class Cpu {
                 cpuUsage[i] = 100 - idleDiff * 100 / (float) totalDiff;
             }
         }
-        return formatPercent(cpuUsage[0]);
+        return cpuUsage[0];
     }
 
     /**
@@ -115,7 +115,7 @@ public class Cpu {
      *
      * @return The number of cores, or 1 if failed to get result
      */
-    public static int getNumCores() {
+    private static int getNumCores() {
 
         if (numCores != -1)
             return numCores;

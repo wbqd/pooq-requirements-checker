@@ -16,23 +16,21 @@ public class Ram {
     public static final long BYTES_TO_GB = BYTES_TO_MB * 1024;
     public static final long BYTES_TO_TB = BYTES_TO_GB * 1024;
 
-    public volatile String value = "0";
-    public volatile String keys;
-
-    public static Map<String, String> parseRam(final String procMem) {
-        final LinkedHashMap<String, String> ramMap = new LinkedHashMap<>();
+    public static Map<String, Integer> parseRam(final String procMem) {
+        final LinkedHashMap<String, Integer> ramMap = new LinkedHashMap<>();
 
         final String lines[] = procMem.trim().split("\n");
 
         for (String line : lines) {
             final String[] token = line.split(" ");
-            ramMap.put(token[0], formatBytes(Integer.valueOf(token[token.length - 2])));
+//            ramMap.put(token[0], formatBytes(Integer.valueOf(token[token.length - 2])));
+            ramMap.put(token[0], Integer.parseInt(token[token.length - 2]));
         }
 
         return ramMap;
     }
 
-    private static String formatBytes(final int kiloBytes) {
+    public static String formatBytes(final int kiloBytes) {
         int bytes = kiloBytes * (int)BYTES_TO_KB;
         if (bytes <= 0)
             return "0 bytes";
@@ -52,7 +50,6 @@ public class Ram {
             int i = 0;
             String load = reader.readLine();
             while (load != null && i++ < 2) {
-//                Logger.v(reader.readLine());
                 buffer.append(load).append("\n");
                 load = reader.readLine();
             }
@@ -65,36 +62,16 @@ public class Ram {
             }
             e.printStackTrace();
         }
-
         return buffer.toString();
     }
 
-    public void setMap(final Map<String, String> map) {
-        final StringBuffer keyBuffer = new StringBuffer();
-        final StringBuffer valueBuffer = new StringBuffer();
-
-        for (final Map.Entry<String, String> entry : map.entrySet()) {
-            keyBuffer.append(entry.getKey()).append("\n");
-            valueBuffer.append(entry.getValue()).append("\n");
-        }
-
-        keys = keyBuffer.toString();
-        value = valueBuffer.toString();
+    public static int getTotalRam() {
+        Map<String, Integer> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
+        return ramMap.get("MemTotal:");
     }
 
-    public static String getTotalRam() {
-        String rawMemoryInfo = getContentRandomAccessFile("proc/meminfo");
-        Map<String, String> stringMap = parseRam(rawMemoryInfo);
-        return stringMap.get("MemTotal:");
+    public static int getFreeRam() {
+        Map<String, Integer> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
+        return ramMap.get("MemFree:");
     }
-
-    public static String getFreeRam() {
-        String rawMemoryInfo = getContentRandomAccessFile("proc/meminfo");
-        Map<String, String> stringMap = parseRam(rawMemoryInfo);
-        return stringMap.get("MemFree:");
-    }
-//
-//    public long getUsedMemory() {
-//
-//    }
 }
