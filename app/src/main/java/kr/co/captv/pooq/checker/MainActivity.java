@@ -116,11 +116,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class BenchmarkingTask extends AsyncTask<Void, Float, Void> {
+        // TODO: Experimental trial: Does using field member is OK?
+        float totalCpuUsage;
+        int ramFree;
 
         @Override
         protected Void doInBackground(Void... params) {
-            float totalCpuUsage;
-            int ramFree;
+//            float totalCpuUsage;
+//            int ramFree;
             while (!isCancelled()) {
                 // CPU part
                 totalCpuUsage = Cpu.getCpuUsage();
@@ -143,8 +146,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(Float... values) {
             // TODO: Modify this method to accept float parameters
 
-            float totalCpuUsage = values[0];
-            int ramFree = values[1].intValue();
+//            float totalCpuUsage = values[0];
+//            int ramFree = values[1].intValue();
 
             cpuUsageView.setText(Cpu.formatPercent(totalCpuUsage));
             ramFreeView.setText(Ram.formatBytes(ramFree));
