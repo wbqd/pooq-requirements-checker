@@ -1,4 +1,4 @@
-package kr.co.captv.pooq.checker.library;
+package kr.co.captv.pooq.checker;
 
 import android.util.Log;
 
@@ -8,8 +8,6 @@ import java.util.ArrayList;
 
 /**
  * Created by wbqd on 15. 8. 18..
- * /**
- *
  * @see https://www.kernel.org/doc/Documentation/filesystems/proc.txt
  */
 public class ProcStat {
@@ -78,17 +76,5 @@ public class ProcStat {
         }
 
         return procStat;
-    }
-
-    @Override
-    public String toString() {
-        return "ProcStat{" +
-                "cpu=" + cpu +
-                ", ctxt=" + ctxt +
-                ", btime=" + btime +
-                ", processes=" + processes +
-                ", procs_running=" + procs_running +
-                ", procs_blocked=" + procs_blocked +
-                '}';
     }
 }

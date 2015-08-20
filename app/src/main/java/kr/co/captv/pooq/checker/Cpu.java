@@ -1,4 +1,4 @@
-package kr.co.captv.pooq.checker.library;
+package kr.co.captv.pooq.checker;
 
 
 import java.io.File;
@@ -69,22 +69,6 @@ public class Cpu {
         if (s.hasNextInt()) cpu.guest_nice = s.nextInt();
 
         return cpu;
-    }
-
-    @Override
-    public String toString() {
-        return "Cpu{" +
-                "user=" + user +
-                ", nice=" + nice +
-                ", system=" + system +
-                ", idle=" + idle +
-                ", iowait=" + iowait +
-                ", irq=" + irq +
-                ", softirq=" + softirq +
-                ", steal=" + steal +
-                ", guest=" + guest +
-                ", guest_nice=" + guest_nice +
-                '}';
     }
 
     public int total() {
