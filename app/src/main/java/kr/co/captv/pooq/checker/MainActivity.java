@@ -3,6 +3,7 @@ package kr.co.captv.pooq.checker;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -13,43 +14,65 @@ public class MainActivity extends AppCompatActivity {
     private TextView memoryUsage;
     private BenchmarkingTask benchmarkingTask;
 
+    private static int log(String msg) {
+        return Log.d("DEBUG", msg);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        showToast("onCreate");
+        log("onCreate start");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         cpuUsage = (TextView) findViewById(R.id.cpu_usage);
         memoryUsage = (TextView) findViewById(R.id.memory_usage);
 
-        benchmarkingTask = new BenchmarkingTask();
-
-        // Immediately start task
-        benchmarkingTask.execute();
+        log("onCreate complete");
     }
 
     @Override
     protected void onStart() {
-        showToast("onStart");
-        super.onStart();
-    }
+        log("onStart start");
 
-    @Override
-    protected void onPause() {
-        showToast("onPause");
-        super.onPause();
+        super.onStart();
+
+        log("onStart complete");
     }
 
     @Override
     protected void onResume() {
-        showToast("onResume");
+        log("onResume start");
         super.onResume();
+        if (benchmarkingTask == null) {
+            log("benchmarkingTask executing");
+            benchmarkingTask = new BenchmarkingTask();
+            benchmarkingTask.execute();
+        }
+        log("onResume complete");
+    }
+
+    @Override
+    protected void onPause() {
+        log("onPause start");
+        super.onPause();
+        log("onPause complete");
     }
 
     @Override
     protected void onStop() {
-        showToast("onStop");
+        log("onStop start");
         super.onStop();
+        log("stop benchmarkingTask");
+        benchmarkingTask = null;
+        log("onStop complete");
+    }
+
+    @Override
+    protected void onRestart() {
+        log("onRestart start");
+        super.onRestart();
+        log("onRestart complete");
     }
 
     @Override
@@ -78,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private class BenchmarkingTask extends AsyncTask<Void, Float, Float> {
+    private class BenchmarkingTask extends AsyncTask<Void, String, String> {
         @Override
         protected void onPreExecute() {
 
@@ -86,13 +109,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        protected Float doInBackground(Void... params) {
-            float totalCpuUsage = 0;
+        protected String doInBackground(Void... params) {
+            String totalCpuUsage = "";
             while (!isCancelled()) {
                 // CPU part
-                totalCpuUsage = Cpu.getCpuUsage()[0];
+                totalCpuUsage = Cpu.getCpuUsage();
 
                 // Memory part
+//                Log.d("DEBUG", Memory.getTotalMemory());
 
 
                 // Publish part
@@ -108,19 +132,19 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        protected void onProgressUpdate(Float... values) {
-            cpuUsage.setText(values[0].toString());
+        protected void onProgressUpdate(String... values) {
+            cpuUsage.setText(values[0]);
         }
 
         @Override
-        protected void onPostExecute(Float aFloat) {
-            cpuUsage.setText(aFloat.toString());
+        protected void onPostExecute(String values) {
+            cpuUsage.setText(values);
 
         }
 
         @Override
-        protected void onCancelled(Float aFloat) {
-            cpuUsage.setText(aFloat.toString());
+        protected void onCancelled(String values) {
+            cpuUsage.setText(values.toString());
         }
     }
 }

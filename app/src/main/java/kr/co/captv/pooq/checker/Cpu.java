@@ -10,6 +10,10 @@ import java.util.regex.Pattern;
  * Created by wbqd on 15. 8. 18..
  */
 public class Cpu {
+    private static float[] cpuUsage;
+    private static ProcStat lastPs;
+    private static int numCores = -1;
+
     /**
      * normal processes executing in user mode
      */
@@ -71,23 +75,16 @@ public class Cpu {
         return cpu;
     }
 
-    public int total() {
-        return user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice;
-    }
-
-    // region usage
-    private static float[] cpuUsage;
-    private static ProcStat lastPs;
-
     /**
      * @credits to https://github.com/takke/cpustats
+     * @return current CPU usage in float
      */
-    public synchronized static float[] getCpuUsage() {
+    public synchronized static String getCpuUsage() {
         if (cpuUsage == null) cpuUsage = new float[getNumCores()];
 
         if (lastPs == null) {
             lastPs = ProcStat.loadProcStat();
-            return cpuUsage;
+            return formatPercent(cpuUsage[0]);
         }
 
         final ProcStat ps = ProcStat.loadProcStat();
@@ -109,14 +106,8 @@ public class Cpu {
                 cpuUsage[i] = 100 - idleDiff * 100 / (float) totalDiff;
             }
         }
-        return cpuUsage;
+        return formatPercent(cpuUsage[0]);
     }
-
-    // endregion
-
-    // region amount cores
-
-    private static int numCores = -1;
 
     /**
      * Gets the number of cores available in this device, across all processors.
@@ -154,5 +145,12 @@ public class Cpu {
         }
     }
 
-    // endregion
+    public static String formatPercent(final float usage) {
+        return String.format("%.2f %s", usage, "%");
+    }
+
+    private int total() {
+        return user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice;
+    }
+
 }
