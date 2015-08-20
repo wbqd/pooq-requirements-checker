@@ -7,8 +7,10 @@ import java.util.Map;
 
 /**
  * Created by wbqd on 15. 8. 19..
+ *
+ * This class parse RAM information from "/proc/meminfo" and manipulate it in proper way.
  */
-public class Memory {
+public class Ram {
     public static final long BYTES_TO_KB = 1024;
     public static final long BYTES_TO_MB = BYTES_TO_KB * 1024;
     public static final long BYTES_TO_GB = BYTES_TO_MB * 1024;
@@ -24,16 +26,12 @@ public class Memory {
 
         for (String line : lines) {
             final String[] token = line.split(" ");
-            // proc mem output looks like this each line: "info         byte kB" with tons of non-utf8-spaces in between,
-            // so split(" ") doesn't work properly, but we can just take the first and length-2 token index to get what we want
-//            ramMap.put(token[0], token[token.length - 2]);
             ramMap.put(token[0], formatBytes(Integer.valueOf(token[token.length - 2])));
         }
 
         return ramMap;
     }
 
-    // alternatve to Formatter.formatFileSize which doesn't show bytes and rounds to int
     private static String formatBytes(final int kiloBytes) {
         int bytes = kiloBytes * (int)BYTES_TO_KB;
         if (bytes <= 0)
@@ -84,13 +82,13 @@ public class Memory {
         value = valueBuffer.toString();
     }
 
-    public static String getTotalMemory() {
+    public static String getTotalRam() {
         String rawMemoryInfo = getContentRandomAccessFile("proc/meminfo");
         Map<String, String> stringMap = parseRam(rawMemoryInfo);
         return stringMap.get("MemTotal:");
     }
 
-    public static String getFreeMemory() {
+    public static String getFreeRam() {
         String rawMemoryInfo = getContentRandomAccessFile("proc/meminfo");
         Map<String, String> stringMap = parseRam(rawMemoryInfo);
         return stringMap.get("MemFree:");

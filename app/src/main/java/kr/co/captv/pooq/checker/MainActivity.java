@@ -11,7 +11,9 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private TextView cpuUsage;
-    private TextView memoryUsage;
+    private TextView ramTotal;
+    private TextView ramFree;
+    private TextView ramAvailable;
     private BenchmarkingTask benchmarkingTask;
 
     private static int log(String msg) {
@@ -26,7 +28,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         cpuUsage = (TextView) findViewById(R.id.cpu_usage);
-        memoryUsage = (TextView) findViewById(R.id.memory_usage);
+        ramTotal = (TextView) findViewById(R.id.memory_total);
+        ramFree = (TextView) findViewById(R.id.memory_free);
+        ramAvailable = (TextView) findViewById(R.id.memory_available);
+
+        // Display total mem in static, because this value not vary.
+        ramTotal.setText(Ram.getTotalRam());
 
         log("onCreate complete");
     }
@@ -101,50 +108,33 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private class BenchmarkingTask extends AsyncTask<Void, String, String> {
+    private class BenchmarkingTask extends AsyncTask<Void, String, Void> {
         @Override
-        protected void onPreExecute() {
-
-        }
-
-
-        @Override
-        protected String doInBackground(Void... params) {
-            String totalCpuUsage = "";
+        protected Void doInBackground(Void... params) {
+            String totalCpuUsage;
+            String ramFree;
             while (!isCancelled()) {
                 // CPU part
                 totalCpuUsage = Cpu.getCpuUsage();
 
-                // Memory part
-//                Log.d("DEBUG", Memory.getTotalMemory());
-
+                // Ram part
+                ramFree = Ram.getFreeRam();
 
                 // Publish part
-                publishProgress(totalCpuUsage);
+                publishProgress(totalCpuUsage, ramFree);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            return totalCpuUsage;
+            return null;
         }
-
 
         @Override
         protected void onProgressUpdate(String... values) {
             cpuUsage.setText(values[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String values) {
-            cpuUsage.setText(values);
-
-        }
-
-        @Override
-        protected void onCancelled(String values) {
-            cpuUsage.setText(values.toString());
+            ramFree.setText(values[1]);
         }
     }
 }

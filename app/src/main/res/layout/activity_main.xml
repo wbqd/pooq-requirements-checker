@@ -23,13 +23,39 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/title_memory"
+        android:id="@+id/title_memory_total"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_memory" />
+        android:text="@string/title_memory_total" />
 
     <TextView
-        android:id="@+id/memory_usage"
+        android:id="@+id/memory_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/title_memory_free"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_memory_free" />
+
+    <TextView
+        android:id="@+id/memory_free"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/title_memory_available"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_memory_available" />
+
+    <TextView
+        android:id="@+id/memory_available"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/placeholder"
