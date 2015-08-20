@@ -23,29 +23,43 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/title_memory_total"
+        android:id="@+id/cpu_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_memory_total" />
+        android:text="@string/placeholder"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/memory_total"
+        android:id="@+id/title_ram_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_ram_total" />
+
+    <TextView
+        android:id="@+id/ram_total"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/placeholder"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/title_memory_free"
+        android:id="@+id/title_ram_free"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_memory_free" />
+        android:text="@string/title_ram_free" />
 
     <TextView
-        android:id="@+id/memory_free"
+        android:id="@+id/ram_free"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/placeholder"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/ram_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>

@@ -10,9 +10,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView cpuUsage;
-    private TextView ramTotal;
-    private TextView ramFree;
+    private static final int CPU_LIMIT = 20;
+    private static final int RAM_LIMIT = 120 * (int) Ram.BYTES_TO_KB;
+
+    // TODO: Set proper NETWORK_LIMIT value
+    private static final int NETWORK_LIMIT = 0;
+
+    private TextView cpuUsageView;
+    private TextView cpuStatusView;
+    private TextView ramFreeView;
+    private TextView ramStatusView;
     private BenchmarkingTask benchmarkingTask;
 
     private static int log(String msg) {
@@ -26,12 +33,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cpuUsage = (TextView) findViewById(R.id.cpu_usage);
-        ramTotal = (TextView) findViewById(R.id.memory_total);
-        ramFree = (TextView) findViewById(R.id.memory_free);
+        cpuUsageView = (TextView) findViewById(R.id.cpu_usage);
+        cpuStatusView = (TextView) findViewById(R.id.cpu_status);
 
         // Display total mem in static, because this value not vary.
-        ramTotal.setText(Ram.formatBytes(Ram.getTotalRam()));
+        ((TextView) findViewById(R.id.ram_total)).setText(Ram.formatBytes(Ram.getTotalRam()));
+        ramFreeView = (TextView) findViewById(R.id.ram_free);
+        ramStatusView = (TextView) findViewById(R.id.ram_status);
+
 
         log("onCreate complete");
     }
@@ -106,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private class BenchmarkingTask extends AsyncTask<Void, String, Void> {
+    private class BenchmarkingTask extends AsyncTask<Void, Float, Void> {
+
         @Override
         protected Void doInBackground(Void... params) {
             float totalCpuUsage;
@@ -119,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 ramFree = Ram.getFreeRam();
 
                 // Publish part
-                publishProgress(Cpu.formatPercent(totalCpuUsage), Ram.formatBytes(ramFree));
+                publishProgress(totalCpuUsage, (float)ramFree);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -130,9 +140,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onProgressUpdate(String... values) {
-            cpuUsage.setText(values[0]);
-            ramFree.setText(values[1]);
+        protected void onProgressUpdate(Float... values) {
+            // TODO: Modify this method to accept float parameters
+
+            float totalCpuUsage = values[0];
+            int ramFree = values[1].intValue();
+
+            cpuUsageView.setText(Cpu.formatPercent(totalCpuUsage));
+            ramFreeView.setText(Ram.formatBytes(ramFree));
+            cpuStatusView.setText(checkCpuStatus(totalCpuUsage));
+            ramStatusView.setText(checkRamStatus(ramFree));
+        }
+
+        private String checkCpuStatus(float cpuUsage) {
+            if (cpuUsage > CPU_LIMIT) {
+                return getResources().getString(R.string.status_cpu_bad);
+            } else {
+                return getResources().getString(R.string.status_cpu_good);
+            }
+        }
+
+        private String checkRamStatus(int ramFree) {
+            // TODO: Beware to distinguish between Dalvik and ART!
+            if (ramFree < RAM_LIMIT) {
+                return getResources().getString(R.string.status_ram_bad);
+            } else {
+                return getResources().getString(R.string.status_ram_good);
+            }
+        }
+
+        // TODO: Implement checkNetworkStatus method
+        private String checkNetworkStatus() {
+            return null;
         }
     }
 }

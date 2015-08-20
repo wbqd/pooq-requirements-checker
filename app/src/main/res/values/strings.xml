@@ -3,8 +3,16 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_cpu">CPU</string>
     <string name="placeholder">Placeholder</string>
-    <string name="title_memory_total">Memory Total</string>
-    <string name="title_memory_free">Memory Free</string>
+
+    <string name="title_cpu">CPU</string>
+    <string name="title_ram_total">Memory Total</string>
+    <string name="title_ram_free">Memory Free</string>
+
+    <string name="status_cpu_good">Good</string>
+    <string name="status_cpu_bad">Bad</string>
+    <string name="status_ram_good">Good</string>
+    <string name="status_ram_bad">Bad</string>
+    <string name="status_network_good">Good</string>
+    <string name="status_network_bad">Bad</string>
 </resources>
