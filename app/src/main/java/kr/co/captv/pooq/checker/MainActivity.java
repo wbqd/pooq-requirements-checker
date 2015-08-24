@@ -3,13 +3,17 @@ package kr.co.captv.pooq.checker;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
+    private static final boolean DEBUG_MODE = false;
     private static final int CPU_LIMIT = 20;
     private static final int RAM_LIMIT = 120 * (int) Ram.BYTES_TO_KB;
 
@@ -22,8 +26,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView ramStatusView;
     private BenchmarkingTask benchmarkingTask;
 
-    private static int log(String msg) {
-        return Log.d("DEBUG", msg);
+    private CardView cpuCard;
+
+    private static void log(String msg) {
+        if (DEBUG_MODE) {
+            Log.d("DEBUG", msg);
+        }
     }
 
     @Override
@@ -41,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
         ramFreeView = (TextView) findViewById(R.id.ram_free);
         ramStatusView = (TextView) findViewById(R.id.ram_status);
 
+        cpuCard = (CardView) findViewById(R.id.card_cpu);
+        cpuCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Click", Toast.LENGTH_LONG).show();
+            }
+        });
 
         log("onCreate complete");
     }
@@ -58,11 +73,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         log("onResume start");
         super.onResume();
-        if (benchmarkingTask == null) {
-            log("benchmarkingTask executing");
-            benchmarkingTask = new BenchmarkingTask();
-            benchmarkingTask.execute();
-        }
+        log("benchmarkingTask executing");
+        benchmarkingTask = new BenchmarkingTask();
+        benchmarkingTask.execute();
         log("onResume complete");
     }
 
@@ -78,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         log("onStop start");
         super.onStop();
         log("stop benchmarkingTask");
-        benchmarkingTask = null;
+        benchmarkingTask.cancel(true);
         log("onStop complete");
     }
 
@@ -125,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
 //            float totalCpuUsage;
 //            int ramFree;
             while (!isCancelled()) {
+                log("doInBackground");
+
                 // CPU part
                 totalCpuUsage = Cpu.getCpuUsage();
 
@@ -132,7 +147,8 @@ public class MainActivity extends AppCompatActivity {
                 ramFree = Ram.getFreeRam();
 
                 // Publish part
-                publishProgress(totalCpuUsage, (float)ramFree);
+                log("publishProgress");
+                publishProgress(totalCpuUsage, (float) ramFree);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -144,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(Float... values) {
+            log("onProgressUpdate");
             // TODO: Modify this method to accept float parameters
 
 //            float totalCpuUsage = values[0];
