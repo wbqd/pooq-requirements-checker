@@ -1,15 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+    tools:context=".MainActivity"
+    android:padding="@dimen/xyz_cardview_padding">
 
         <include
             android:id="@+id/card_cpu"
@@ -19,22 +14,8 @@
             android:id="@+id/card_ram"
             layout="@layout/card_view_ram" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
         <include
             android:id="@+id/card_network"
             layout="@layout/card_view_network" />
-
-        <include
-            android:id="@+id/card_total"
-            layout="@layout/card_view_total" />
-
-    </LinearLayout>
 
 </LinearLayout>
