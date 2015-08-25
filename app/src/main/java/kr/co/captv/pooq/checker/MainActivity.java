@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private static final int RAM_LIMIT = 120 * (int) Ram.BYTES_TO_KB;
 
     // TODO: Set proper NETWORK_LIMIT value
-    private static final int NETWORK_LIMIT = 0;
+    private static final double NETWORK_LIMIT = 1.0;
 
     private TextView cpuUsageView;
     private TextView cpuStatusView;
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private Button networkStopDownloadButton;
     private Button networkShowDownloadButton;
     private AppCompatButton networkQueryDownloadStatus;
+    private boolean isDownloading;
 
     private static void log(String msg) {
         if (DEBUG_MODE) {
@@ -58,13 +59,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Init field members
         downloadReference = -1;
+        isDownloading = false;
 
+        // CPU
         cpuUsageView = (TextView) findViewById(R.id.cpu_usage);
         cpuStatusView = (TextView) findViewById(R.id.cpu_status);
 
-        // Display total mem in static, because this value not vary.
+        // Display total RAM in static, because this value not vary.
         ((TextView) findViewById(R.id.ram_total)).setText(Ram.formatBytes(Ram.getTotalRam()));
+
         ramFreeView = (TextView) findViewById(R.id.ram_free);
         ramStatusView = (TextView) findViewById(R.id.ram_status);
 
@@ -264,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 //Enqueue a new download and same the referenceId
                 downloadReference = downloadManager.enqueue(request);
+                isDownloading = true;
 
                 networkDownloadStatusView.setText("Testing...");
                 networkStopDownloadButton.setEnabled(true);
@@ -289,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 networkStartDownloadButton.setEnabled(true);
                 networkQueryDownloadStatus.setEnabled(false);
                 networkStopDownloadButton.setEnabled(false);
+                isDownloading = false;
                 break;
 
             case R.id.button_network_show_download:
@@ -301,10 +308,30 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         }
     }
 
-    private class BenchmarkingTask extends AsyncTask<Void, Float, Void> {
+    private class BenchmarkingTask extends AsyncTask<Void, Void, Void> {
         // TODO: Experimental trial: Does using field member is OK?
-        float totalCpuUsage;
-        int ramFree;
+        private float totalCpuUsage;
+        private int ramFree;
+        private DownloadManager.Query query;
+        private long bytesDownloadedSoFarBefore;
+        private long bytesDownloadedSoFarAfter;
+        private long timeTagA;
+        private long timeTagB;
+        private double timeDiff;
+        private double bytesDiff;
+        private double bps;
+
+        @Override
+        protected void onPreExecute() {
+            query = new DownloadManager.Query();
+            bytesDownloadedSoFarBefore = 0;
+            bytesDownloadedSoFarAfter = 0;
+            timeTagA = 0;
+            timeTagB = 0;
+            timeDiff = 0;
+            bytesDiff = 0;
+            bps = 0;
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -313,26 +340,70 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             while (!isCancelled()) {
                 log("doInBackground");
 
+
                 // CPU part
                 totalCpuUsage = Cpu.getCpuUsage();
 
                 // Ram part
                 ramFree = Ram.getFreeRam();
 
-                // Publish part
-                log("publishProgress");
-                publishProgress(totalCpuUsage, (float) ramFree);
+                // Network speed part
+                if (isDownloading) {
+                    // Set the query filter to our previously Enqueued download
+                    query.setFilterById(downloadReference);
+
+                    // Query the download manager about downloads that have been requested.
+                    Cursor cursor = downloadManager.query(query);
+                    if (cursor.moveToFirst()) {
+                        int columnStatusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                        int status = cursor.getInt(columnStatusIndex);
+
+                        if (status == DownloadManager.STATUS_RUNNING) {
+                            int columnBytesDownloadedSoFar = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+                            bytesDownloadedSoFarBefore = cursor.getLong(columnBytesDownloadedSoFar);
+                            timeTagA = System.currentTimeMillis();
+                        }
+                    }
+                }
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                if (isDownloading) {
+                    // Query the download manager about downloads that have been requested.
+                    Cursor cursor = downloadManager.query(query);
+                    if (cursor.moveToFirst()) {
+                        int columnStatusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                        int status = cursor.getInt(columnStatusIndex);
+
+                        if (status == DownloadManager.STATUS_RUNNING) {
+                            int columnBytesDownloadedSoFar = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+                            bytesDownloadedSoFarAfter = cursor.getLong(columnBytesDownloadedSoFar);
+                            timeTagB = System.currentTimeMillis();
+
+                            timeDiff = timeTagB - timeTagA;
+                            bytesDiff = bytesDownloadedSoFarAfter - bytesDownloadedSoFarBefore;
+
+                            if (bytesDiff != 0) {
+                                bps = (bytesDiff / (timeDiff / 1000));
+                            }
+                        }
+                    }
+                }
+
+                // Publish part
+                log("publishProgress");
+                publishProgress();
+
             }
             return null;
         }
 
         @Override
-        protected void onProgressUpdate(Float... values) {
+        protected void onProgressUpdate(Void... params) {
             log("onProgressUpdate");
             // TODO: Modify this method to accept float parameters
 
@@ -340,9 +411,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 //            int ramFree = values[1].intValue();
 
             cpuUsageView.setText(Cpu.formatPercent(totalCpuUsage));
-            ramFreeView.setText(Ram.formatBytes(ramFree));
             cpuStatusView.setText(checkCpuStatus(totalCpuUsage));
+
+            ramFreeView.setText(Ram.formatBytes(ramFree));
             ramStatusView.setText(checkRamStatus(ramFree));
+
+            networkSpeedView.setText(Ram.formatBytes((int)bps / 1024)+"/s");
         }
 
         private String checkCpuStatus(float cpuUsage) {
