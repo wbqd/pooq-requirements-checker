@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         switch (v.getId()) {
             case R.id.button_network_start_download:
                 downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                Uri downloadUri = Uri.parse("http://192.168.10.147/e.iso");
+                Uri downloadUri = Uri.parse("http://capaddl.pooq.x-cdn.com/pooq_test/gayo_2M.mp4");
                 DownloadManager.Request request = new DownloadManager.Request(downloadUri);
 
                 //Set the title of this download, to be displayed in notifications (if enabled).
@@ -287,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 if (cursor.moveToFirst()) {
                     checkStatus(cursor);
                 }
+                cursor.close();
                 break;
 
             case R.id.button_network_stop_download:
@@ -364,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                             timeTagA = System.currentTimeMillis();
                         }
                     }
+                    cursor.close();
                 }
 
                 try {
@@ -392,6 +394,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                             }
                         }
                     }
+                    cursor.close();
                 }
 
                 // Publish part
