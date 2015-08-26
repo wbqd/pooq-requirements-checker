@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private TextView cpuUsageView;
     private TextView cpuStatusView;
     private TextView ramFreeView;
-    private TextView ramFreeView1;
     private TextView ramStatusView;
     private TextView networkSpeedView;
     private TextView networkStatusView;
@@ -74,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         ((TextView) findViewById(R.id.ram_total)).setText(Utils.formatBytes(Ram.getTotalRam()));
 
         ramFreeView = (TextView) findViewById(R.id.ram_free);
-        ramFreeView1 = (TextView) findViewById(R.id.ram_free_1);
         ramStatusView = (TextView) findViewById(R.id.ram_status);
 
         // Find network associated views & button.
@@ -327,7 +325,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         // TODO: Experimental trial: Does using field member is OK?
         private float totalCpuUsage;
         private long ramFree;
-        private long ramFree1;
         private DownloadManager.Query query;
         private long bytesDownloadedSoFarBefore;
         private long bytesDownloadedSoFarAfter;
@@ -362,7 +359,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                 // Ram part
                 ramFree = Ram.getFreeRam();
-                ramFree1 = Ram.getAvailRam(MainActivity.this);
 
                 // Network speed part
                 if (isDownloading) {
@@ -438,7 +434,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             cpuStatusView.setText(checkCpuStatus(totalCpuUsage));
 
             ramFreeView.setText(Utils.formatBytes(ramFree));
-            ramFreeView1.setText(Utils.formatBytes(ramFree1));
             Trace.d(Utils.formatBytes(ramFree));
             ramStatusView.setText(checkRamStatus(ramFree));
 
