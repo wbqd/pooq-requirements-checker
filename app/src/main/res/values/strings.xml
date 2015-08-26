@@ -1,6 +1,25 @@
 <resources>
-    <string name="app_name">pooq Checker</string>
+    <string name="app_name">pooq 사양 체크</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="placeholder">Placeholder</string>
+
+    <string name="title_cpu">CPU</string>
+    <string name="title_ram_total">Memory Total</string>
+    <string name="title_ram_free">Memory Free</string>
+    <string name="title_network">Network</string>
+    <string name="title_network_download_status">Download Status</string>
+
+    <string name="status_cpu_good">Good</string>
+    <string name="status_cpu_bad">Bad</string>
+    <string name="status_ram_good">Good</string>
+    <string name="status_ram_bad">Bad</string>
+    <string name="status_network_good">Good</string>
+    <string name="status_network_bad">Bad</string>
+
+    <string name="button_network_start_download">Start</string>
+    <string name="button_network_stop_download">Stop</string>
+    <string name="button_network_show_download">Show downloads</string>
+    <string name="button_network_query_download_status">Check Status</string>
 </resources>
