@@ -3,6 +3,7 @@
     <dimen name="xyz_activity_horizontal_margin">16dp</dimen>
     <dimen name="xyz_activity_vertical_margin">16dp</dimen>
     <dimen name="xyz_cardview_margin">8dp</dimen>
+    <dimen name="xyz_cardview_content_margin">16dp</dimen>
     <dimen name="xyz_cardview_content_padding">16dp</dimen>
     <dimen name="xyz_cardview_padding">8dp</dimen>
 </resources>

@@ -434,12 +434,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 //            int ramFree = values[1].intValue();
 
             cpuUsageView.setText(Utils.formatPercent(totalCpuUsage));
-//            Trace.d(Utils.formatPercent(totalCpuUsage));
+            Trace.d(Utils.formatPercent(totalCpuUsage));
             cpuStatusView.setText(checkCpuStatus(totalCpuUsage));
 
             ramFreeView.setText(Utils.formatBytes(ramFree));
             ramFreeView1.setText(Utils.formatBytes(ramFree1));
-//            Trace.d(Utils.formatBytes(ramFree));
+            Trace.d(Utils.formatBytes(ramFree));
             ramStatusView.setText(checkRamStatus(ramFree));
 
             networkSpeedView.setText(Utils.formatBytes((int) bps)+"/s");
@@ -447,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         private String checkCpuStatus(float cpuUsage) {
             if (cpuUsage > CPU_LIMIT) {
-                return getResources().getString(R.string.status_cpu_bad);
+                return getResources().getString(R.string.status_cpu_danger);
             } else {
                 return getResources().getString(R.string.status_cpu_good);
             }
@@ -456,7 +456,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         private String checkRamStatus(long ramFree) {
             // TODO: Beware to distinguish between Dalvik and ART!
             if (ramFree < RAM_LIMIT) {
-                return getResources().getString(R.string.status_ram_bad);
+                return getResources().getString(R.string.status_ram_danger);
             } else {
                 return getResources().getString(R.string.status_ram_good);
             }
