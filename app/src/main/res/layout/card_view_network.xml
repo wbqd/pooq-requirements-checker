@@ -5,16 +5,13 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/xyz_cardview_margin"
     card_view:cardCornerRadius="@dimen/cardview_default_radius"
-    card_view:cardElevation="@dimen/cardview_default_elevation">
+    card_view:cardElevation="@dimen/cardview_default_elevation"
+    card_view:contentPadding="@dimen/xyz_cardview_content_padding">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/xyz_activity_vertical_margin"
-        android:paddingLeft="@dimen/xyz_activity_horizontal_margin"
-        android:paddingRight="@dimen/xyz_activity_horizontal_margin"
-        android:paddingTop="@dimen/xyz_activity_vertical_margin">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,7 +36,7 @@
             android:id="@+id/button_network_start_download"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_network_start_download"/>
+            android:text="@string/button_network_start_download" />
 
         <Button
             android:id="@+id/button_network_stop_download"

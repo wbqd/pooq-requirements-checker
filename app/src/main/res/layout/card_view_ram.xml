@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/xyz_cardview_margin"
-    android:visibility="gone"
+    android:visibility="visible"
     card_view:cardCornerRadius="@dimen/cardview_default_radius"
     card_view:cardElevation="@dimen/cardview_default_elevation">
 
@@ -38,6 +38,18 @@
 
         <TextView
             android:id="@+id/ram_free"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_ram_free_1" />
+
+        <TextView
+            android:id="@+id/ram_free_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/placeholder"

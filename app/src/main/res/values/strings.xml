@@ -7,7 +7,8 @@
 
     <string name="title_cpu">CPU</string>
     <string name="title_ram_total">Memory Total</string>
-    <string name="title_ram_free">Memory Free</string>
+    <string name="title_ram_free">Memory Free via meminfo</string>
+    <string name="title_ram_free_1">Memory Free via activity manager</string>
     <string name="title_network">Network</string>
     <string name="title_network_download_status">Download Status</string>
 

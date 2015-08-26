@@ -1,5 +1,8 @@
 package kr.co.captv.pooq.checker;
 
+import android.app.ActivityManager;
+import android.content.Context;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.LinkedHashMap;
@@ -11,10 +14,6 @@ import java.util.Map;
  * This class parse RAM information from "/proc/meminfo" and manipulate it in proper way.
  */
 public class Ram {
-    public static final long BYTES_TO_KB = 1024;
-    public static final long BYTES_TO_MB = BYTES_TO_KB * 1024;
-    public static final long BYTES_TO_GB = BYTES_TO_MB * 1024;
-    public static final long BYTES_TO_TB = BYTES_TO_GB * 1024;
 
     public static Map<String, Integer> parseRam(final String procMem) {
         final LinkedHashMap<String, Integer> ramMap = new LinkedHashMap<>();
@@ -28,17 +27,6 @@ public class Ram {
         }
 
         return ramMap;
-    }
-
-    public static String formatBytes(final int kiloBytes) {
-        int bytes = kiloBytes * (int)BYTES_TO_KB;
-        if (bytes <= 0)
-            return "0 bytes";
-
-        return bytes / BYTES_TO_TB > 0 ? String.format("%.2f TB", bytes / (float) BYTES_TO_TB) :
-                bytes / BYTES_TO_GB > 0 ? String.format("%.2f GB", bytes / (float) BYTES_TO_GB) :
-                        bytes / BYTES_TO_MB > 0 ? String.format("%.2f MB", bytes / (float) BYTES_TO_MB) :
-                                bytes / BYTES_TO_KB > 0 ? String.format("%.2f KB", bytes / (float) BYTES_TO_KB) : bytes + " bytes";
     }
 
     public static String getContentRandomAccessFile(String file) {
@@ -65,13 +53,20 @@ public class Ram {
         return buffer.toString();
     }
 
-    public static int getTotalRam() {
+    public static long getTotalRam() {
         Map<String, Integer> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
-        return ramMap.get("MemTotal:");
+        return ramMap.get("MemTotal:") * 1024;
     }
 
-    public static int getFreeRam() {
+    public static long getFreeRam() {
         Map<String, Integer> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
-        return ramMap.get("MemFree:");
+        return ramMap.get("MemFree:") * 1024;
+    }
+
+    public static long getAvailRam(Context context) {
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        activityManager.getMemoryInfo(memoryInfo);
+        return memoryInfo.availMem;
     }
 }
