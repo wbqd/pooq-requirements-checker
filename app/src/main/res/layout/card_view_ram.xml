@@ -28,13 +28,30 @@
                 android:layout_marginTop="4dp"
                 android:src="@drawable/card_ram_title_bubble" />
 
-            <TextView
-                style="@style/TextAppearance.AppCompat.Title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="RAM"
-                android:textSize="24sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="RAM"
+                    android:textSize="14sp" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="사용 가능한 RAM 크기"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -90,6 +107,7 @@
 
         <TextView
             android:id="@+id/ram_status"
+            style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="24dp"
@@ -97,7 +115,6 @@
             android:paddingRight="16dp"
             android:paddingTop="16dp"
             android:text="@string/placeholder"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="14sp" />
 
     </LinearLayout>

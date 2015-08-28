@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
@@ -19,6 +20,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.daimajia.numberprogressbar.NumberProgressBar;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     private static final boolean DEBUG_MODE = false;
@@ -47,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private Button networkShowDownloadButton;
     private AppCompatButton networkQueryDownloadStatus;
     private boolean isDownloading;
+
+    // TODO: Implement this progress bar to display download progress
+    private NumberProgressBar numberProgressBar;
 
     private static void log(String msg) {
         if (DEBUG_MODE) {
@@ -84,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         networkStartDownloadButton.setOnClickListener(this);
 
         networkStopDownloadButton = (Button) findViewById(R.id.button_network_stop_download);
-        networkStopDownloadButton.setEnabled(false);
         networkStopDownloadButton.setOnClickListener(this);
 
         networkQueryDownloadStatus = (AppCompatButton) findViewById(R.id.button_network_query_download_status);
@@ -93,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         networkShowDownloadButton = (Button) findViewById(R.id.button_network_show_download);
         networkShowDownloadButton.setOnClickListener(this);
+
+        numberProgressBar = (NumberProgressBar) findViewById(R.id.network_download_progress_bar);
+        numberProgressBar.setProgress(0);
 
         log("onCreate complete");
     }
@@ -113,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         log("benchmarkingTask executing");
         benchmarkingTask = new BenchmarkingTask();
         benchmarkingTask.execute();
+        networkStartDownloadButton.setEnabled(true);
+        networkStopDownloadButton.setEnabled(false);
         log("onResume complete");
     }
 
@@ -370,15 +380,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     if (cursor.getCount() > 0) {
                         cursor.moveToFirst();
                         int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                        Trace.d("COLUMN_STATUS: " + status);
+//                        Trace.d("COLUMN_STATUS: " + status);
                         int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
-                        Trace.d("COLUMN_REASON: " + reason);
+//                        Trace.d("COLUMN_REASON: " + reason);
 
                         if (status == DownloadManager.STATUS_RUNNING) {
                             int columnBytesDownloadedSoFar = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
                             bytesDownloadedSoFarBefore = cursor.getLong(columnBytesDownloadedSoFar);
                             timeTagA = System.currentTimeMillis();
-                            Trace.d("bytes_downloaded: " + bytesDownloadedSoFarBefore);
+//                            Trace.d("bytes_downloaded: " + bytesDownloadedSoFarBefore);
                         }
                     }
                     cursor.close();
@@ -430,14 +440,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 //            int ramFree = values[1].intValue();
 
             cpuUsageView.setText(Utils.formatPercent(totalCpuUsage));
-            Trace.d(Utils.formatPercent(totalCpuUsage));
+//            Trace.d(Utils.formatPercent(totalCpuUsage));
             cpuStatusView.setText(checkCpuStatus(totalCpuUsage));
 
             ramFreeView.setText(Utils.formatBytes(ramFree));
-            Trace.d(Utils.formatBytes(ramFree));
+//            Trace.d(Utils.formatBytes(ramFree));
             ramStatusView.setText(checkRamStatus(ramFree));
 
-            networkSpeedView.setText(Utils.formatBytes((int) bps)+"/s");
+            networkSpeedView.setText(Utils.formatBytes((int) bps) + "/s");
         }
 
         private String checkCpuStatus(float cpuUsage) {
