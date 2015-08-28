@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
@@ -19,10 +21,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.numberprogressbar.NumberProgressBar;
+
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     private static final boolean DEBUG_MODE = false;
     private static final int CPU_LIMIT = 20;
-    private static final int RAM_LIMIT = 120 * (int) Ram.BYTES_TO_KB;
+    private static final int RAM_LIMIT = 120 * (int) Utils.BYTES_TO_KB;
+    private static final int API = Build.VERSION.SDK_INT;
 
     // TODO: Set proper NETWORK_LIMIT value
     private static final double NETWORK_LIMIT = 1.0;
@@ -46,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private AppCompatButton networkQueryDownloadStatus;
     private boolean isDownloading;
 
+    // TODO: Implement this progress bar to display download progress
+    private NumberProgressBar numberProgressBar;
+
     private static void log(String msg) {
         if (DEBUG_MODE) {
             Log.d("DEBUG", msg);
@@ -68,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         cpuStatusView = (TextView) findViewById(R.id.cpu_status);
 
         // Display total RAM in static, because this value not vary.
-        ((TextView) findViewById(R.id.ram_total)).setText(Ram.formatBytes(Ram.getTotalRam()));
+        ((TextView) findViewById(R.id.ram_total)).setText(Utils.formatBytes(Ram.getTotalRam()));
 
         ramFreeView = (TextView) findViewById(R.id.ram_free);
         ramStatusView = (TextView) findViewById(R.id.ram_status);
@@ -82,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         networkStartDownloadButton.setOnClickListener(this);
 
         networkStopDownloadButton = (Button) findViewById(R.id.button_network_stop_download);
-        networkStopDownloadButton.setEnabled(false);
         networkStopDownloadButton.setOnClickListener(this);
 
         networkQueryDownloadStatus = (AppCompatButton) findViewById(R.id.button_network_query_download_status);
@@ -91,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         networkShowDownloadButton = (Button) findViewById(R.id.button_network_show_download);
         networkShowDownloadButton.setOnClickListener(this);
+
+        numberProgressBar = (NumberProgressBar) findViewById(R.id.network_download_progress_bar);
+        numberProgressBar.setProgress(0);
 
         log("onCreate complete");
     }
@@ -111,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         log("benchmarkingTask executing");
         benchmarkingTask = new BenchmarkingTask();
         benchmarkingTask.execute();
+        networkStartDownloadButton.setEnabled(true);
+        networkStopDownloadButton.setEnabled(false);
         log("onResume complete");
     }
 
@@ -178,9 +190,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         //column for reason code if the download failed or paused
         int columnReason = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
         int reason = cursor.getInt(columnReason);
+
         //get the download filename
-        int filenameIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME);
-        String filename = cursor.getString(filenameIndex);
         String statusText = "";
         String reasonText = "";
 
@@ -215,6 +226,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                     case DownloadManager.ERROR_UNKNOWN:
                         reasonText = "ERROR_UNKNOWN";
                         break;
+                    case 404:
+                        reasonText = "404 Not Found";
+                        break;
+                    default:
+                        reasonText = "UNKNOWN";
+                        break;
                 }
                 break;
             case DownloadManager.STATUS_PAUSED:
@@ -242,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 break;
             case DownloadManager.STATUS_SUCCESSFUL:
                 statusText = "STATUS_SUCCESSFUL";
-                reasonText = "Filename:\n" + filename;
                 break;
         }
 
@@ -257,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         switch (v.getId()) {
             case R.id.button_network_start_download:
                 downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                Uri downloadUri = Uri.parse("http://capaddl.pooq.x-cdn.com/pooq_test/gayo_2M.mp4");
+                Uri downloadUri = Uri.parse(Constants.TEST_URL_1);
                 DownloadManager.Request request = new DownloadManager.Request(downloadUri);
 
                 //Set the title of this download, to be displayed in notifications (if enabled).
@@ -266,6 +282,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 request.setDescription("Test Data download using DownloadManager.");
                 //Set the local destination for the downloaded file to a path within the application's external files directory
                 request.setDestinationInExternalFilesDir(MainActivity.this, Environment.DIRECTORY_DOWNLOADS, "test");
+
+//                if (API >= Build.VERSION_CODES.HONEYCOMB) {
+//                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+//                } else {
+//                    request.setShowRunningNotification(false);
+//                }
 
                 //Enqueue a new download and same the referenceId
                 downloadReference = downloadManager.enqueue(request);
@@ -312,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private class BenchmarkingTask extends AsyncTask<Void, Void, Void> {
         // TODO: Experimental trial: Does using field member is OK?
         private float totalCpuUsage;
-        private int ramFree;
+        private long ramFree;
         private DownloadManager.Query query;
         private long bytesDownloadedSoFarBefore;
         private long bytesDownloadedSoFarAfter;
@@ -355,14 +377,18 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
                     // Query the download manager about downloads that have been requested.
                     Cursor cursor = downloadManager.query(query);
-                    if (cursor.moveToFirst()) {
-                        int columnStatusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                        int status = cursor.getInt(columnStatusIndex);
+                    if (cursor.getCount() > 0) {
+                        cursor.moveToFirst();
+                        int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+//                        Trace.d("COLUMN_STATUS: " + status);
+                        int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
+//                        Trace.d("COLUMN_REASON: " + reason);
 
                         if (status == DownloadManager.STATUS_RUNNING) {
                             int columnBytesDownloadedSoFar = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
                             bytesDownloadedSoFarBefore = cursor.getLong(columnBytesDownloadedSoFar);
                             timeTagA = System.currentTimeMillis();
+//                            Trace.d("bytes_downloaded: " + bytesDownloadedSoFarBefore);
                         }
                     }
                     cursor.close();
@@ -413,27 +439,29 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 //            float totalCpuUsage = values[0];
 //            int ramFree = values[1].intValue();
 
-            cpuUsageView.setText(Cpu.formatPercent(totalCpuUsage));
+            cpuUsageView.setText(Utils.formatPercent(totalCpuUsage));
+//            Trace.d(Utils.formatPercent(totalCpuUsage));
             cpuStatusView.setText(checkCpuStatus(totalCpuUsage));
 
-            ramFreeView.setText(Ram.formatBytes(ramFree));
+            ramFreeView.setText(Utils.formatBytes(ramFree));
+//            Trace.d(Utils.formatBytes(ramFree));
             ramStatusView.setText(checkRamStatus(ramFree));
 
-            networkSpeedView.setText(Ram.formatBytes((int)bps / 1024)+"/s");
+            networkSpeedView.setText(Utils.formatBytes((int) bps) + "/s");
         }
 
         private String checkCpuStatus(float cpuUsage) {
             if (cpuUsage > CPU_LIMIT) {
-                return getResources().getString(R.string.status_cpu_bad);
+                return getResources().getString(R.string.status_cpu_danger);
             } else {
                 return getResources().getString(R.string.status_cpu_good);
             }
         }
 
-        private String checkRamStatus(int ramFree) {
+        private String checkRamStatus(long ramFree) {
             // TODO: Beware to distinguish between Dalvik and ART!
             if (ramFree < RAM_LIMIT) {
-                return getResources().getString(R.string.status_ram_bad);
+                return getResources().getString(R.string.status_ram_danger);
             } else {
                 return getResources().getString(R.string.status_ram_good);
             }

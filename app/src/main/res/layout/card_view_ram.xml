@@ -4,51 +4,118 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/xyz_cardview_margin"
-    android:visibility="gone"
     card_view:cardCornerRadius="@dimen/cardview_default_radius"
     card_view:cardElevation="@dimen/cardview_default_elevation">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/xyz_activity_vertical_margin"
-        android:paddingLeft="@dimen/xyz_activity_horizontal_margin"
-        android:paddingRight="@dimen/xyz_activity_horizontal_margin"
-        android:paddingTop="@dimen/xyz_activity_vertical_margin">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/title_ram_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_ram_total" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:orientation="horizontal"
+            android:padding="@dimen/xyz_cardview_content_margin">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="4dp"
+                android:src="@drawable/card_ram_title_bubble" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="RAM"
+                    android:textSize="14sp" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="사용 가능한 RAM 크기"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="총 메모리 크기"
+                android:textSize="14sp" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/ram_total"
+            style="@style/TextAppearance.AppCompat.Display2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/placeholder"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_gravity="right"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/placeholder" />
 
-        <TextView
-            android:id="@+id/title_ram_free"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_ram_free" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/title_ram_free"
+                android:textSize="14sp" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/ram_free"
+            style="@style/TextAppearance.AppCompat.Display3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/placeholder"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_gravity="right"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/placeholder" />
 
         <TextView
             android:id="@+id/ram_status"
+            style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="24dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
             android:text="@string/placeholder"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 

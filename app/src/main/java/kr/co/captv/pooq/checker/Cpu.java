@@ -145,10 +145,6 @@ public class Cpu {
         }
     }
 
-    public static String formatPercent(final float usage) {
-        return String.format("%.2f %s", usage, "%");
-    }
-
     private int total() {
         return user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice;
     }

@@ -6,20 +6,22 @@
     <string name="placeholder">Placeholder</string>
 
     <string name="title_cpu">CPU</string>
-    <string name="title_ram_total">Memory Total</string>
-    <string name="title_ram_free">Memory Free</string>
+    <string name="title_ram_free">사용 가능 메모리</string>
     <string name="title_network">Network</string>
     <string name="title_network_download_status">Download Status</string>
 
-    <string name="status_cpu_good">Good</string>
-    <string name="status_cpu_bad">Bad</string>
-    <string name="status_ram_good">Good</string>
-    <string name="status_ram_bad">Bad</string>
-    <string name="status_network_good">Good</string>
-    <string name="status_network_bad">Bad</string>
+    <string name="status_cpu_good">CPU가 이상적인 상태에 있습니다.</string>
+    <string name="status_cpu_caution">CPU가 다소 부하 상태에 있습니다.</string>
+    <string name="status_cpu_danger">CPU가 과부하 상태에 있습니다. pooq 이용에 지장이 있을 수도 있습니다.</string>
+    <string name="status_ram_good">RAM에 여유 공간이 많습니다. pooq을 원활하게 이용할 수 있습니다.</string>
+    <string name="status_ram_caution">RAM을 다소 사용 중입니다. pooq 이용에 지장이 있을 수도 있습니다.</string>
+    <string name="status_ram_danger">RAM에 여유 공간이 거의 없습니다. 다른 앱을 종료하는 것을 권장합니다.</string>
+    <string name="status_network_good">네트워크 속도가 매우 빠릅니다. pooq 콘텐츠를 초고화질로 시청하실 수 있습니다.</string>
+    <string name="status_network_caution">네트워크 속도가 보통입니다. pooq 콘텐츠를 고화질로 시청하실 수 있습니다.</string>
+    <string name="status_network_danger">네트워크 속도가 느립니다. pooq 콘텐츠를 일반화질 또는 저화질로 시청하실 수 있습니다.</string>
 
-    <string name="button_network_start_download">Start</string>
-    <string name="button_network_stop_download">Stop</string>
+    <string name="button_network_start_download">시작</string>
+    <string name="button_network_stop_download">중지</string>
     <string name="button_network_show_download">Show downloads</string>
     <string name="button_network_query_download_status">Check Status</string>
 </resources>
