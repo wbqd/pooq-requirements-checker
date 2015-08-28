@@ -15,15 +15,15 @@ import java.util.Map;
  */
 public class Ram {
 
-    public static Map<String, Integer> parseRam(final String procMem) {
-        final LinkedHashMap<String, Integer> ramMap = new LinkedHashMap<>();
+    public static Map<String, Long> parseRam(final String procMem) {
+        final LinkedHashMap<String, Long> ramMap = new LinkedHashMap<>();
 
         final String lines[] = procMem.trim().split("\n");
 
         for (String line : lines) {
             final String[] token = line.split(" ");
 //            ramMap.put(token[0], formatBytes(Integer.valueOf(token[token.length - 2])));
-            ramMap.put(token[0], Integer.parseInt(token[token.length - 2]));
+            ramMap.put(token[0], Long.parseLong(token[token.length - 2]));
         }
 
         return ramMap;
@@ -54,15 +54,17 @@ public class Ram {
     }
 
     public static long getTotalRam() {
-        Map<String, Integer> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
+        Map<String, Long> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
+        Trace.d("MemTotal: " + ramMap.get("MemTotal:") * 1024);
         return ramMap.get("MemTotal:") * 1024;
     }
 
     public static long getFreeRam() {
-        Map<String, Integer> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
+        Map<String, Long> ramMap = parseRam(getContentRandomAccessFile("proc/meminfo"));
         return ramMap.get("MemFree:") * 1024;
     }
 
+    // Free memory get from activity manager
     public static long getAvailRam(Context context) {
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
