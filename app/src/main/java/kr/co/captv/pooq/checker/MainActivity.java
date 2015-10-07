@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private static final int API = Build.VERSION.SDK_INT;
 
     // TODO: Set proper NETWORK_LIMIT value
-    private static final double NETWORK_LIMIT = 1.0;
+    private static final double NETWORK_LIMIT = 10.0;
 
     private TextView cpuUsageView;
     private TextView cpuStatusView;
